@@ -1,4 +1,5 @@
 const axios = require("axios");
+const user = require('../models/User');
 axios.defaults.baseURL = "https://id.socialler.eu/api";
 exports.login = async (req,res)=>{
    axios.post('auth/login',{email:req.body.email,password:req.body.password}).then((response)=>{
