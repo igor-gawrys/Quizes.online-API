@@ -19,6 +19,17 @@ module.exports.find = async (notificationID) => {
     return notification;
 };
 // notificationID = ID
+module.exports.update = async (notificationID,notification) => {
+    await Notification.where('id', notificationID).save({
+       content:notification.name,
+       sended_at:notification.sended_at || null
+    },{
+        method: 'update',
+        patch: true
+    });
+    return true;
+};
+// notificationID = ID
 module.exports.delete = async (notificationID) => {
     await Notification.where('id', notificationID).destroy();
     return true;

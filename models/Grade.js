@@ -21,4 +21,24 @@ module.exports.find = async (gradeID) => {
     const grade = await Grade.where('id', gradeID).fetch({withRelated: ['notifications']});
     return grade;
 };
-
+// gradeName = NAME
+module.exports.findByName = async (gradeName) => {
+    const grade = await Grade.where('name', gradeName).fetch({withRelated: ['notifications']});
+    return grade;
+};
+// gradeID = ID
+module.exports.delete = async (gradeID) => {
+    await Grade.where('id', gradeID).destroy();
+    return true;
+};
+// gradeID = ID
+module.exports.update = async (gradeID,grade) => {
+    await Grade.where('id', gradeID).save({
+       name:grade.name,
+       color:grade.color
+    },{
+        method: 'update',
+        patch: true
+    });
+    return true;
+};
