@@ -4,13 +4,13 @@ const Grade = require('../models/Grade');
 const User = bookshelf.Model.extend({
    tableName:'users',
    grades:function() {
-    return this.hasMany(Grade,'user_id','id');
+    return this.hasMany(Grade,'user_id','social_user_id');
    }
 });
 
 module.exports.create = (user) => {
     return new User({
-        social_user_id:user.id
+        social_user_id:user.social_user_id
     }).save();
 };
 // userID = ID
