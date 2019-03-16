@@ -9,6 +9,12 @@ exports.show = async (req,res)=>{
     res.json({data:grade});
 }
 exports.create = async (req,res)=>{
+    const user = await User.findSocial(req.user.id);
+     if(user==null){
+        user.create({
+           social_user_id:req.user.id 
+        });
+     }
     await Grade.create({
         name:req.body.name,
         color:req.body.color,
