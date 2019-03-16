@@ -1,10 +1,15 @@
 const bookshelf = require('../config/bookshelf');
 const Notification = require('../models/Notification');
+const Mail = require('../models/Mail');
+
 const Grade = bookshelf.Model.extend({
    tableName:'grades',
    notifications:function() {
     return this.hasMany(Notification,'grade_id','id');
-  }
+   },
+   mails:function() {
+    return this.hasMany(Mail,'grade_id','id');
+   }
 });
 
 module.exports = bookshelf.model('Grade',Grade);
@@ -16,9 +21,13 @@ module.exports.create = (grade) => {
         user_id:grade.user_id
     }).save();
 };
+module.exports.all = async () => {
+    const grades = await Grade.forge().fetchAll({withRelated: ['notifications','mails']});
+    return grades;
+};
 // gradeID = ID
 module.exports.find = async (gradeID) => {
-    const grade = await Grade.where('id', gradeID).fetch({withRelated: ['notifications']});
+    const grade = await Grade.where('id', gradeID).fetch({withRelated: ['notifications','mails']});
     return grade;
 };
 // gradeName = NAME

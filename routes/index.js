@@ -14,5 +14,7 @@ router.get('/auth/grades/:grade',require('../controllers/GradesController').show
 router.get('/auth/notifications/:notification',require('../controllers/NotificationsController').show);
 router.post('/auth/notifications',require('../controllers/NotificationsController').create);
 router.delete('/auth/notifications/:notification',require('../controllers/NotificationsController').delete);
+router.post('/auth/mails',require('../controllers/MailsController').create);
+router.delete('/auth/mails/:mail',require('../controllers/MailsController').delete);
 
 module.exports = router;

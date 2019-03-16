@@ -1,16 +1,19 @@
 require('dotenv').config()
-const config = require('./config/facebook')
+const config_facebook = require('./config/facebook')
+const config_mailer = require('./config/mailer')
 const moment = require('moment')
 const Bot = require('./models/Bot')
+const Mail = require('./models/Mail')
 const Grade = require('./models/Grade')
 const Notification = require('./models/Notification')
 'use strict';
 const BootBot = require('bootbot');
+const nodemailer = require("nodemailer");
 
 const bot = new BootBot({
-  accessToken:config.access,
-  verifyToken:config.verify,
-  appSecret:config.secret
+  accessToken:config_facebook.access,
+  verifyToken:config_facebook.verify,
+  appSecret:config_facebook.secret
 });
 bot.on('message',async (payload, chat) => { 
   const sender = await Bot.findBySender(payload.sender.id);
@@ -53,17 +56,45 @@ bot.hear('rejestracja', async (payload, chat) => {
 		askGrade(convo);
 	});
 });
+bot.hear('wyrejestruj', async (payload, chat) => {
+    await Bot.deleteBySender(payload.sender.id);
+    chat.say("Zostałeś prawidłowo wyrejestrowany ! Miło mi się z tobą pracowało :)");
+});
 setInterval(async ()=>{
+  //Bots
   const bots = await Bot.all();
   bots.filter(async (item)=>{
     const grade = await Grade.find(item.toJSON().grade.id);
     grade.toJSON().notifications.filter((notification)=>{
-      if(notification.sended_at==null){
+      if(notification.sended_bots_at==null){
           bot.say(item.toJSON().sender_id,notification.content);
           Notification.update(notification.id,{
               content:notification.content,
-              sended_at:moment(moment.now()).format("YYYY-MM-DD hh:mm:ss")
+              sended_bots_at:moment(moment.now()).format("YYYY-MM-DD hh:mm:ss")
           });
+      }
+    });
+  });
+  //Mails
+  const grades = await Grade.all();
+  grades.filter(async (grade)=>{
+    const item = await Grade.find(grade.toJSON().id);
+    item.toJSON().notifications.filter(async (notification)=>{
+      if(notification.sended_mails_at==null){
+        grade.toJSON().mails.filter(async (mail)=>{
+          let transporter = nodemailer.createTransport(config_mailer);
+          await transporter.sendMail({
+            from: '"Scholl MultiNotify" <no-reply@id.socialler.eu>', // sender address
+            to: mail.email, // list of receivers
+            subject: "Powiadomienie od klasy-"+item.toJSON().name, // Subject line
+            text: "Powiadomeinie......"+notification.content, // plain text body
+            html: "<h1 style='text-align:center'>Powiadomienie !</h1><br/><p>"+notification.content+"</p>" // html body
+          });
+          Notification.update(notification.id,{
+              content:notification.content,
+              sended_mails_at:moment(moment.now()).format("YYYY-MM-DD hh:mm:ss")
+          });
+        });
       }
     });
   });

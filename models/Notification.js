@@ -22,7 +22,8 @@ module.exports.find = async (notificationID) => {
 module.exports.update = async (notificationID,notification) => {
     await Notification.where('id', notificationID).save({
        content:notification.name,
-       sended_at:notification.sended_at || null
+       sended_bots_at:notification.sended_bots_at || this.sended_bots_at,
+       sended_mails_at:notification.sended_mails_at || this.sended_mails_at
     },{
         method: 'update',
         patch: true

@@ -1,11 +1,13 @@
 const bookshelf = require('../config/bookshelf');
 const Grade = require('../models/Grade');
+
 const Bot = bookshelf.Model.extend({
    tableName:'bots',
    grade:function() {
     return this.hasOne(Grade,'id','grade_id');
   }
 });
+
 module.exports.create = (bot) => {
     return new Bot({
         sender_id:bot.sender_id,
@@ -25,4 +27,9 @@ module.exports.find = async (botID) => {
 module.exports.findBySender = async (senderID) => {
     const bot = await Bot.where('sender_id', senderID).fetch({withRelated: ['grade']});
     return bot;
+};
+// senderID = senderID
+module.exports.deleteBySender = async (senderID) => {
+    await Bot.where('sender_id', senderID).destroy();
+    return true;
 };
