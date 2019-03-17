@@ -23,27 +23,27 @@ bot.on('message',async (payload, chat) => {
   if(sender !=null){
     chat.say("Witaj ponownie :)");
   }else{
-    if(senders.includes(payload.sender.id)){
-        chat.say("Cześć,aby rozpocząć wpisz rejestracja !");
+    if(senders.includes(payload.sender.id)==false){
+        chat.say({ text:"Cześć,aby rozpocząć wpisz rejestracja !", quickReplies: ['rejestracja'] });
         senders.push(payload.sender.id);
     }
   }
 });
 bot.hear('rejestracja', async (payload, chat) => {
     const askGrade = (convo) => {
-		convo.ask(`Jak nazywa się twoja klasa ?`, (payload, convo) => {
-			const text = payload.message.text;
-			convo.set('grade', text);
+    convo.ask(`Jak nazywa się twoja klasa ?`, (payload, convo) => {
+      const text = payload.message.text;
+      convo.set('grade', text);
             //convo.say(`Dobrze,twoja klasa nazywa się ${text}`).then(() => askKey(convo));
             convo.say(`Dobrze,twoja klasa nazywa się ${text}`).then(() => sendSummary(convo));
-		});
+    });
     };
     // const askKey = (convo) => {
-	// 	convo.ask(`Jaki jest unikatowy klucz twojej klasy ?`, (payload, convo) => {
-	// 		const text = payload.message.text;
-	// 		convo.set('key', text);
-	// 		convo.say(`Dobrze,twój klucz to ${text}`).then(() => sendSummary(convo));
-	// 	});
+  //   convo.ask(`Jaki jest unikatowy klucz twojej klasy ?`, (payload, convo) => {
+  //     const text = payload.message.text;
+  //     convo.set('key', text);
+  //     convo.say(`Dobrze,twój klucz to ${text}`).then(() => sendSummary(convo));
+  //   });
     // };
     const sendSummary = async (convo) => {
     const grade = await Grade.findByName(convo.get('grade'));
@@ -59,8 +59,8 @@ bot.hear('rejestracja', async (payload, chat) => {
     convo.end();
     };
     chat.conversation((convo) => {
-		askGrade(convo);
-	});
+    askGrade(convo);
+  });
 });
 bot.hear('wyrejestruj', async (payload, chat) => {
     await Bot.deleteBySender(payload.sender.id);
@@ -68,13 +68,12 @@ bot.hear('wyrejestruj', async (payload, chat) => {
 });
 bot.hear('pomoc', async (payload, chat) => {
     chat.say({
-	      text: 'Dostępne polecenia to:',
-	      buttons: [
-          { type: 'pomoc', title: 'pomoc' },
-          { type: 'nadaj', title: 'nadaj (pracujemy nad tą opcją)' },
-		      { type: 'rejestracja', title: 'rejestracja' },
-		      { type: 'wyrejestruj', title: 'wyrejestruj'}
-	      ]
+        text: 'Dostępne polecenia to:',
+        buttons: [
+          { type: 'postback', title: 'nadaj (pracujemy nad tą funkcjonalnością)', payload: 'HELPED'},
+          { type: 'postback', title: 'rejestracja', payload: 'HELPED'},
+          { type: 'postback', title: 'wyrejestruj', payload: 'HELPED'}
+        ]
     });
 });
 setInterval(async ()=>{
