@@ -8,9 +8,11 @@ router.post('/auth/me',require('../controllers/AuthController').me);
 router.post('/auth/logout',require('../controllers/AuthController').logout);
 router.get('/auth/grades',require('../controllers/GradesController').index);
 router.post('/auth/grades',require('../controllers/GradesController').create);
-router.patch('/auth/grades/:grade',require('../controllers/GradesController').update);
-router.delete('/auth/grades/:grade',require('../controllers/GradesController').delete);
-router.get('/auth/grades/:grade',require('../controllers/GradesController').show);
+//Midleware
+router.use('/auth',require('../middlewares/GradeMiddleware').perrmission);
+router.patch('/auth/grades/:grade',require('../middlewares/GradeMiddleware').perrmission,require('../controllers/GradesController').update);
+router.delete('/auth/grades/:grade',require('../middlewares/GradeMiddleware').perrmission,require('../controllers/GradesController').delete);
+router.get('/auth/grades/:grade',require('../middlewares/GradeMiddleware').perrmission,require('../controllers/GradesController').show);
 router.get('/auth/notifications/:notification',require('../controllers/NotificationsController').show);
 router.post('/auth/notifications',require('../controllers/NotificationsController').create);
 router.delete('/auth/notifications/:notification',require('../controllers/NotificationsController').delete);

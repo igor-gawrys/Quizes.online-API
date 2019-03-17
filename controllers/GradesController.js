@@ -5,8 +5,7 @@ exports.index = async (req,res)=>{
     res.json({data:user});
 }
 exports.show = async (req,res)=>{
-    const grade = await Grade.find(req.params.grade);
-    res.json({data:grade});
+    res.json({data:req.grade});
 }
 exports.create = async (req,res)=>{
     const user = await User.findSocial(req.user.id);

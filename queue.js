@@ -2,13 +2,16 @@ require('dotenv').config()
 const config_facebook = require('./config/facebook')
 const config_mailer = require('./config/mailer')
 const moment = require('moment')
+const fs = require('fs');
 const Bot = require('./models/Bot')
 const Mail = require('./models/Mail')
 const Grade = require('./models/Grade')
 const Notification = require('./models/Notification')
+const senders = [];
 'use strict';
 const BootBot = require('bootbot');
 const nodemailer = require("nodemailer");
+
 
 const bot = new BootBot({
   accessToken:config_facebook.access,
@@ -20,7 +23,10 @@ bot.on('message',async (payload, chat) => {
   if(sender !=null){
     chat.say("Witaj ponownie :)");
   }else{
-    chat.say("Witaj,wpisz rejestracja aby rozpocząć !");
+    if(senders.includes(payload.sender.id)){
+        chat.say("Cześć,aby rozpocząć wpisz rejestracja !");
+        senders.push(payload.sender.id);
+    }
   }
 });
 bot.hear('rejestracja', async (payload, chat) => {
@@ -60,6 +66,17 @@ bot.hear('wyrejestruj', async (payload, chat) => {
     await Bot.deleteBySender(payload.sender.id);
     chat.say("Zostałeś prawidłowo wyrejestrowany ! Miło mi się z tobą pracowało :)");
 });
+bot.hear('pomoc', async (payload, chat) => {
+    chat.say({
+	      text: 'Dostępne polecenia to:',
+	      buttons: [
+          { type: 'pomoc', title: 'pomoc' },
+          { type: 'nadaj', title: 'nadaj (pracujemy nad tą opcją)' },
+		      { type: 'rejestracja', title: 'rejestracja' },
+		      { type: 'wyrejestruj', title: 'wyrejestruj'}
+	      ]
+    });
+});
 setInterval(async ()=>{
   //Bots
   const bots = await Bot.all();
@@ -83,12 +100,15 @@ setInterval(async ()=>{
       if(notification.sended_mails_at==null){
         grade.toJSON().mails.filter(async (mail)=>{
           let transporter = nodemailer.createTransport(config_mailer);
+          let html = fs.readFileSync('./storage/sketch/mail.html','utf8');
+          html = html.replace("<grade/>",item.toJSON().name);
+          html = html.replace("<content/>",notification.content);
           await transporter.sendMail({
             from: '"Scholl MultiNotify" <no-reply@id.socialler.eu>', // sender address
             to: mail.email, // list of receivers
             subject: "Powiadomienie od klasy-"+item.toJSON().name, // Subject line
             text: "Powiadomeinie......"+notification.content, // plain text body
-            html: "<h1 style='text-align:center'>Powiadomienie !</h1><br/><p>"+notification.content+"</p>" // html body
+            html: html // html body
           });
           Notification.update(notification.id,{
               content:notification.content,
