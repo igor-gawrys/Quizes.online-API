@@ -24,7 +24,8 @@ exports.create = async (req,res)=>{
 }
 exports.update = async (req,res)=>{
     await Quiz.update(req.params.quiz,{
-       
+        title: req.body.title,
+        cover: req.body.cover
     });
     res.json({ message:"Prawidłowo zaktualizowano !" });
 }

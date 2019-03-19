@@ -9,6 +9,7 @@ module.exports = bookshelf.model('Answer',Answer);
 module.exports.create = (answer) => {
     return new Answer({
        content: answer.content,
+       correct: answer.correct,
        question_id: answer.question_id,
        user_id: answer.user_id
     }).save();
@@ -18,4 +19,22 @@ module.exports.create = (answer) => {
 module.exports.find = async (answerID) => {
     const answer = await Answer.where('id',answerID).fetch();
     return answer;
+};
+
+// answerID = ID
+module.exports.delete = async (answerID) => {
+    await Answer.where('id', answerID).destroy();
+    return true;
+};
+
+// answerID = ID
+module.exports.update = async (answerID,answer) => {
+    await Answer.where('id', answerID).save({
+        content: answer.content,
+        correct: answer.correct
+    },{
+        method: 'update',
+        patch: true
+    });
+    return true;
 };

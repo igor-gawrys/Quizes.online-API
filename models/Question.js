@@ -12,7 +12,6 @@ module.exports = bookshelf.model('Question',Question);
 
 module.exports.create = (question) => {
     return new Question({
-       title: question.title,
        content: question.content,
        order: question.order || 1,
        user_id: question.user_id,
@@ -22,6 +21,24 @@ module.exports.create = (question) => {
 
 // questionID = Question ID
 module.exports.find = async (questionID) => {
-    const question = await Question.where('id',questionID).fetch();
+    const question = await Question.where('id',questionID).fetch({ withRelated: ['answers'] });
     return question;
+};
+
+// questionID = ID
+module.exports.delete = async (questionID) => {
+    await Question.where('id', questionID).destroy();
+    return true;
+};
+
+// questionID = ID
+module.exports.update = async (questionID,question) => {
+    await Question.where('id', questionID).save({
+        content: question.content,
+        order: question.order
+    },{
+        method: 'update',
+        patch: true
+    });
+    return true;
 };
