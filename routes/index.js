@@ -6,17 +6,20 @@ router.post('/auth/login',require('../controllers/AuthController').login);
 router.use('/auth',require('../controllers/AuthController').auth);
 router.post('/auth/me',require('../controllers/AuthController').me);
 router.post('/auth/logout',require('../controllers/AuthController').logout);
-router.get('/auth/grades',require('../controllers/GradesController').index);
-router.post('/auth/grades',require('../controllers/GradesController').create);
+router.get('/auth/quizes',require('../controllers/QuizesController').index);
+router.post('/auth/quizes',require('../controllers/QuizesController').create);
 //Midleware
-router.use('/auth',require('../middlewares/GradeMiddleware').perrmission);
-router.patch('/auth/grades/:grade',require('../middlewares/GradeMiddleware').perrmission,require('../controllers/GradesController').update);
-router.delete('/auth/grades/:grade',require('../middlewares/GradeMiddleware').perrmission,require('../controllers/GradesController').delete);
-router.get('/auth/grades/:grade',require('../middlewares/GradeMiddleware').perrmission,require('../controllers/GradesController').show);
-router.get('/auth/notifications/:notification',require('../controllers/NotificationsController').show);
-router.post('/auth/notifications',require('../controllers/NotificationsController').create);
-router.delete('/auth/notifications/:notification',require('../controllers/NotificationsController').delete);
-router.post('/auth/mails',require('../controllers/MailsController').create);
-router.delete('/auth/mails/:mail',require('../controllers/MailsController').delete);
+router.use('/auth',require('../middlewares/QuizMiddleware').perrmission);
+router.patch('/auth/quizes/:quiz',require('../middlewares/QuizMiddleware').perrmission,require('../controllers/QuizesController').update);
+router.delete('/auth/quizes/:quiz',require('../middlewares/QuizMiddleware').perrmission,require('../controllers/QuizesController').delete);
+router.get('/auth/quizes/:quiz',require('../middlewares/QuizMiddleware').perrmission,require('../controllers/QuizesController').show);
+//Middleware
+router.use('/auth',require('../middlewares/QuestionMiddleware').perrmission);
+router.get('/auth/questions/:question',require('../controllers/QuestionsController').show);
+router.post('/auth/questions',require('../controllers/QuestionsController').create);
+router.delete('/auth/questions/:question',require('../controllers/QuestionsController').delete);
+router.get('/auth/answers/:answer',require('../controllers/AnswersController').show);
+router.post('/auth/answers',require('../controllers/AnswersController').create);
+router.delete('/auth/answers/:answer',require('../controllers/AnswersController').delete);
 
 module.exports = router;
