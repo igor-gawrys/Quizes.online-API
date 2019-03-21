@@ -15,10 +15,10 @@ router.delete('/auth/quizes/:quiz',require('../middlewares/QuizMiddleware').perr
 router.get('/auth/quizes/:quiz',require('../middlewares/QuizMiddleware').perrmission,require('../controllers/QuizesController').show);
 //Middleware
 router.use('/auth',require('../middlewares/QuestionMiddleware').perrmission);
-router.get('/auth/questions/:question',require('../controllers/QuestionsController').show);
 router.post('/auth/questions',require('../controllers/QuestionsController').create);
 router.patch('/auth/questions/:question',require('../controllers/QuestionsController').update);
 router.delete('/auth/questions/:question',require('../controllers/QuestionsController').delete);
+router.get('/auth/questions/:question',require('../controllers/QuestionsController').show);
 router.get('/auth/answers/:answer',require('../controllers/AnswersController').show);
 router.post('/auth/answers',require('../controllers/AnswersController').create);
 router.patch('/auth/answers/:answer',require('../controllers/AnswersController').update);
